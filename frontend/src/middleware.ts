@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const PUBLIC_ROUTES = ['/login', '/register', '/about'];
+const PUBLIC_ROUTES = ["/", "/login", "/register", "/about"];
 
 export function middleware(req: NextRequest) {
     const token = req.cookies.get('access_token')?.value;
@@ -9,7 +9,7 @@ export function middleware(req: NextRequest) {
 
     const isPublic = PUBLIC_ROUTES.some(route => pathname.startsWith(route));
 
-    if (isPublic && token) {
+    if ((pathname === '/login' || pathname === '/register') && token) {
         return NextResponse.redirect(new URL('/dashboard', req.url));
     }
 
@@ -22,5 +22,10 @@ export function middleware(req: NextRequest) {
 
 
 export const config = {
-    matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+    matcher: [
+        '/dashboard/:path*',
+        '/login',
+        '/register',
+        '/'
+    ],
 };

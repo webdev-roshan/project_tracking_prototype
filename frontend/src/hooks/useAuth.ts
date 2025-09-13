@@ -1,5 +1,5 @@
 "use client";
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery, useQueryClient, UseMutationOptions } from "@tanstack/react-query";
 import axiosInstance from "@/api/axios";
 
 
@@ -65,20 +65,26 @@ export const useRegister = () => {
     })
 }
 
+
 const logoutUser = async () => {
-    const response = await axiosInstance.post("/auth/logout/")
-    return response
+    const { data } = await axiosInstance.post("/auth/logout/")
+    return data
 }
 
-
-export const useLogout = () => {
-
+export const useLogout = (
+    options?: UseMutationOptions<any, Error, void>
+) => {
     const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: logoutUser,
-        onSuccess: () => {
-            queryClient.removeQueries({ queryKey: ['me'] })
-        }
+        onSuccess: (data, variables, context) => {
+            queryClient.removeQueries({ queryKey: ["me"] })
+            options?.onSuccess?.(data, variables, context)
+        },
+        onError: (error, variables, context) => {
+            console.error("Logout failed", error)
+            options?.onError?.(error, variables, context)
+        },
     })
 }

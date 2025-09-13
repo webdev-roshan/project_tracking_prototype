@@ -10,7 +10,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "owner",
             "name",
             "description",
-            "category",
+            "categories",
             "is_owner",
             "created_at",
             "updated_at",
